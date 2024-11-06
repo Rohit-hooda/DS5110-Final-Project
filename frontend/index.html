@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-size: cover;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 bg-dark p-4 rounded">
+                <h1 class="text-center mb-4">Weather App</h1>
+                <form id="weatherForm" onsubmit="fetchWeatherData(); return false;">
+                    <div class="form-group">
+                        <label for="countyName">Select County:</label>
+                        <select id="countyName" class="form-control" required>
+                            <option value="">Select...</option>
+                            <option value="Barnstable">Barnstable</option>
+                            <option value="Berkshire">Berkshire</option>
+                            <option value="Bristol">Bristol</option>
+                            <option value="Dukes">Dukes</option>
+                            <option value="Essex">Essex</option>
+                            <option value="Franklin">Franklin</option>
+                            <option value="Hampden">Hampden</option>
+                            <option value="Hampshire">Hampshire</option>
+                            <option value="Middlesex">Middlesex</option>
+                            <option value="Nantucket">Nantucket</option>
+                            <option value="Norfolk">Norfolk</option>
+                            <option value="Plymouth">Plymouth</option>
+                            <option value="Suffolk">Suffolk</option>
+                            <option value="Worcester">Worcester</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="typeOfInformation">Select Type of Information:</label>
+                        <select id="typeOfInformation" class="form-control" required>
+                            <option value="">Select...</option>
+                            <option value="temperature_2m_max">Maximum Temperature</option>
+                            <option value="temperature_2m_min">Minimum Temperature</option>
+                            <option value="precipitation_sum">Total Precipitation</option>
+                            <option value="sunshine_duration">Sunshine Duration</option>
+                            <option value="uv_index_max">UV Index Max</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Get Weather Data</button>
+                </form>
+                <div id="result" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
