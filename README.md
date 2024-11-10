@@ -12,3 +12,12 @@ python3 app.py
 cd frontend
 python -m http.server 5500
 ```
+
+Features we are plotting on the dashboard
+1. Temperature(min/max)
+2. Wind Speed
+3. Gust Speed
+4. Weather Code
+5. DayLight Duration
+6. Sunlight duration
+7. Air Quality Index
