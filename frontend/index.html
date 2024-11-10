@@ -10,6 +10,10 @@
             background-size: cover;
             color: white;
         }
+        #graph-container {
+            margin-top: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +46,7 @@
                         <label for="typeOfInformation">Select Type of Information:</label>
                         <select id="typeOfInformation" class="form-control" required>
                             <option value="">Select...</option>
-                            <option value="temperature_2m_max">Maximum Temperature</option>
+                            <option value="Max Temperature (°C)">Maximum Temperature</option>
                             <option value="temperature_2m_min">Minimum Temperature</option>
                             <option value="precipitation_sum">Total Precipitation</option>
                             <option value="sunshine_duration">Sunshine Duration</option>
@@ -51,10 +55,14 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Get Weather Data</button>
                 </form>
-                <div id="result" class="mt-4"></div>
             </div>
         </div>
+        <div id="result" class="mt-4"></div>
+        <div id="graph-container">
+            <img id="weatherGraph" style="max-width: 100%; display: none;" alt="Weather Graph">
+        </div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
