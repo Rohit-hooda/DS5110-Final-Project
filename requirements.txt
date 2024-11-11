@@ -1,0 +1,5 @@
+geopandas
+folium
+requests
+pandas
+glob2
