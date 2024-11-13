@@ -1,12 +1,6 @@
-import os
+from flask import Flask, jsonify, request, render_template
 import pandas as pd
-from flask import Flask, jsonify, request, render_template, send_file
 from flask_cors import CORS
-import matplotlib.pyplot as plt
-import io
-import matplotlib
-
-matplotlib.use('Agg')  # Use the 'Agg' backend for non-GUI rendering
 
 app = Flask(__name__)
 CORS(app)
@@ -42,34 +36,12 @@ def weather():
         print("No data found for the given county.")
         return jsonify({"error": "No data found for the given county"}), 404
 
-    # Create a figure with responsive sizing based on screen resolution
-    fig, ax = plt.subplots(figsize=(10, 6))  # Adjust this size for responsiveness
-    ax.plot(filtered_data['Date'], filtered_data[info_type], label=info_type, color='tab:blue', linewidth=2)
-    
-    ax.set_xlabel('Date', fontsize=14)
-    ax.set_ylabel(info_type, fontsize=14)
-    ax.set_title(f'{info_type} over Time for {county_name}', fontsize=16)
-    
-    # Add gridlines for readability
-    ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+    # Prepare data for the chart
+    chart_data = filtered_data[['Date', info_type]].rename(columns={'Date': 'date', info_type: 'value'})
+    chart_data['date'] = chart_data['date'].dt.strftime('%Y-%m-%d')  # Format date as string for JSON serialization
+    chart_data = chart_data.to_dict(orient='records')
 
-    # Customize tick parameters for readability
-    ax.tick_params(axis='x', rotation=45, labelsize=12)
-    ax.tick_params(axis='y', labelsize=12)
-
-    # Add a legend
-    ax.legend(loc='upper left', fontsize=12)
-
-    # Adjust layout to ensure everything fits without overlapping
-    plt.tight_layout()
-
-    # Save the figure to a BytesIO object
-    img_io = io.BytesIO()
-    plt.savefig(img_io, format='PNG', dpi=800)  # Increased DPI for better quality
-    img_io.seek(0)
-
-    # Send the image as a response with correct headers
-    return send_file(img_io, mimetype='image/png')
+    return jsonify({"data": chart_data, "info_type": info_type, "county_name": county_name})
 
 if __name__ == '__main__':
     app.run(debug=True)

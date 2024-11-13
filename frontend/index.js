@@ -3,24 +3,38 @@ function fetchWeatherData() {
     const typeOfInformation = document.getElementById("typeOfInformation").value;
 
     const url = `http://127.0.0.1:5000/weather?countyName=${encodeURIComponent(countyName)}&typeOfInformation=${encodeURIComponent(typeOfInformation)}`;
-    
-    axios.get(url, { responseType: 'arraybuffer' })
+
+    axios.get(url)
         .then(response => {
-            // Convert the binary data (image) to a Blob
-            const blob = new Blob([response.data], { type: 'image/png' });
+            const data = response.data;
 
-            // Create a URL for the image Blob
-            const imgURL = URL.createObjectURL(blob);
+            // Handle error if data is not returned properly
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
 
-            // Create an image element to display the graph
-            const imgElement = document.createElement("img");
-            imgElement.src = imgURL;
-            imgElement.style.width = '100%';  // Makes the image scale according to the screen width
-            imgElement.style.height = 'auto'; // Keeps aspect ratio
+            // Clear the existing chart content in 'weather_chart' container
+            document.getElementById("weather_chart").innerHTML = '';
 
-            // Clear previous content and append the new image
-            document.getElementById("result").innerHTML = '';  // Clear previous results
-            document.getElementById("result").appendChild(imgElement);
+            // Process data for AnyChart
+            const chartData = data.data.map(item => [item.date, item.value]);
+            const chartTitle = `${data.info_type} over Time for ${data.county_name}`;
+
+            // Create and render the new chart
+            anychart.onDocumentReady(function() {
+                const chart = anychart.line();
+                chart.data(chartData);
+                chart.title(chartTitle);
+                chart.xAxis().title('Date');
+                chart.yAxis().title(data.info_type);
+                chart.container('weather_chart');
+                chart.draw();
+            });
+
+            // Clear previous results and show the chart container
+            document.getElementById("result").innerHTML = '';
+            document.getElementById("graph-container").style.display = 'block';
         })
         .catch(error => {
             console.error("Error fetching weather data:", error);

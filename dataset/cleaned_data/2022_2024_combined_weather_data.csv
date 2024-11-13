@@ -1,4 +1,4 @@
-,Date,County,Latitude,Longitude,Max Temperature (°C),Min Temperature (°C),Max UV Index,Max Wind Speed (m/s),Max Wind Gusts (m/s),Air Quality Index (AQI),Daylight Duration (hours),Sunshine Duration (hours),Weather Condition
+,Date,County,Latitude,Longitude,Max Temperature,Min Temperature,Max UV Index,Max Wind Speed,Max Wind Gusts,Air Quality Index,Daylight Duration,Sunshine Duration,Weather Condition
 0,2022-01-01 04:00:00+00:00,Barnstable,41.7003,-70.3002,10.764999,7.265,0.55,16.575644,35.64,Good,9.217571666666666,0.0,"Drizzle: Light, moderate, and dense intensity"
 1,2022-01-02 04:00:00+00:00,Barnstable,41.7003,-70.3002,10.065,4.3650002,0.65,19.107151,39.239998,Good,9.230429722222222,0.0,"Rain: Slight, moderate and heavy intensity"
 2,2022-01-03 04:00:00+00:00,Barnstable,41.7003,-70.3002,3.265,-2.185,0.9,29.888672,53.28,Good,9.244399999999999,0.0,"Rain: Slight, moderate and heavy intensity"
