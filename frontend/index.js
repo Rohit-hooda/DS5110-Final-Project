@@ -1,40 +1,72 @@
 function fetchWeatherData() {
+    // Reset the chart and legend before making a new request
+    document.getElementById("weather_chart").innerHTML = '';
+    document.getElementById('chartLegend').innerHTML = '';
+
     const countyName = document.getElementById("countyName").value;
-    const typeOfInformation = document.getElementById("typeOfInformation").value;
+    const infoTypes = Array.from(document.querySelectorAll('input[name="typeOfInformation"]:checked')).map(checkbox => checkbox.value);
+    const fromDate = document.getElementById("fromDate").value;
+    const toDate = document.getElementById("toDate").value;
 
-    const url = `http://127.0.0.1:5000/weather?countyName=${encodeURIComponent(countyName)}&typeOfInformation=${encodeURIComponent(typeOfInformation)}`;
+    if (new Date(fromDate) > new Date(toDate)) {
+        alert("The 'From' date cannot be later than the 'To' date.");
+        return;
+    }
 
+    const url = `http://127.0.0.1:5000/weather?countyName=${encodeURIComponent(countyName)}&typeOfInformation=${encodeURIComponent(infoTypes.join(','))}&fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
+    
     axios.get(url)
         .then(response => {
             const data = response.data;
 
-            // Handle error if data is not returned properly
             if (data.error) {
                 alert(data.error);
                 return;
             }
 
-            // Clear the existing chart content in 'weather_chart' container
-            document.getElementById("weather_chart").innerHTML = '';
+            const chartData = data.data.map(info => ({
+                info_type: info.info_type,
+                values: info.values.map(item => {
+                    const formattedDate = new Date(item.Date).toLocaleString('en-GB', {
+                        weekday: 'short',  
+                        day: '2-digit',    
+                        month: 'short',    
+                        year: 'numeric'   
+                    });
+                    return [formattedDate, item.value];
+                })
+            }));
 
-            // Process data for AnyChart
-            const chartData = data.data.map(item => [item.date, item.value]);
-            const chartTitle = `${data.info_type} over Time for ${data.county_name}`;
-
-            // Create and render the new chart
             anychart.onDocumentReady(function() {
                 const chart = anychart.line();
-                chart.data(chartData);
-                chart.title(chartTitle);
+                chart.title(`Weather Data from ${fromDate} to ${toDate}`);
+
+                const legendContainer = document.getElementById('chartLegend');
+                legendContainer.innerHTML = '';
+                legendContainer.style.display = 'flex';
+                legendContainer.style.flexWrap = 'wrap';  
+                legendContainer.style.justifyContent = 'flex-start'; 
+
+                chartData.forEach((series, index) => {
+                    const data = anychart.data.set(series.values);
+                    const lineSeries = chart.line(data);
+                    lineSeries.name(series.info_type);
+
+                    const legendItem = document.createElement('div');
+                    legendItem.style.color = lineSeries.color();
+                    legendItem.style.marginRight = '15px';
+                    legendItem.style.display = 'flex';
+                    legendItem.style.alignItems = 'center';
+
+                    legendItem.innerHTML = `<span style="color:${lineSeries.color()}; margin-right: 5px;">●</span> ${series.info_type}`;
+                    legendContainer.appendChild(legendItem);
+                });
+
                 chart.xAxis().title('Date');
-                chart.yAxis().title(data.info_type);
+                chart.yAxis().title('Value');
                 chart.container('weather_chart');
                 chart.draw();
             });
-
-            // Clear previous results and show the chart container
-            document.getElementById("result").innerHTML = '';
-            document.getElementById("graph-container").style.display = 'block';
         })
         .catch(error => {
             console.error("Error fetching weather data:", error);

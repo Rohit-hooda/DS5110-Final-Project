@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container m-10 ">
         <div class="row justify-content-center">
             <div class="col-md-6 bg-dark p-4 rounded">
                 <h1 class="text-center mb-4">Weather App</h1>
@@ -26,7 +26,7 @@
                     <div class="form-group">
                         <label for="countyName">Select County:</label>
                         <select id="countyName" class="form-control" required>
-                            <option value="">Select...</option>
+                            <option value="" disabled selected>Select County</option>
                             <option value="Barnstable">Barnstable</option>
                             <option value="Berkshire">Berkshire</option>
                             <option value="Bristol">Bristol</option>
@@ -44,27 +44,35 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="typeOfInformation">Select Type of Information:</label>
-                        <select id="typeOfInformation" class="form-control" required>
-                            <option value="">Select...</option>
-                            <option value="Max Temperature">Maximum Temperature</option>
-                            <option value="Min Temperature">Minimum Temperature</option>
-                            <option value="Max UV Index">UV Index</option>
-                            <option value="Max Wind Speed">Wind Speed</option>
-                            <option value="Max Wind Gusts">Gust Speed</option>
-                            <option value="Air Quality Index">Air Quality Index</option>
-                            <option value="Daylight Duration">Daylight Duration</option>
-                            <option value="Sunshine Duration">Sunshine Duration</option>
-                            <option value="Weather Condition">Weather Condition</option>
-                        </select>
+                        <label>Select Type of Information:</label><br>
+                        <input type="checkbox" name="typeOfInformation" value="Max Temperature" class="form-check-input"> Maximum Temperature<br>
+                        <input type="checkbox" name="typeOfInformation" value="Min Temperature" class="form-check-input"> Minimum Temperature<br>
+                        <input type="checkbox" name="typeOfInformation" value="Max UV Index" class="form-check-input"> UV Index<br>
+                        <input type="checkbox" name="typeOfInformation" value="Max Wind Speed" class="form-check-input"> Wind Speed<br>
+                        <input type="checkbox" name="typeOfInformation" value="Max Wind Gusts" class="form-check-input"> Gust Speed<br>
+                        <input type="checkbox" name="typeOfInformation" value="Air Quality Index" class="form-check-input"> Air Quality Index<br>
+                        <input type="checkbox" name="typeOfInformation" value="Daylight Duration" class="form-check-input"> Daylight Duration<br>
+                        <input type="checkbox" name="typeOfInformation" value="Sunshine Duration" class="form-check-input"> Sunshine Duration<br>
+                        <!-- <input type="checkbox" name="typeOfInformation" value="Weather Condition" class="form-check-input"> Weather Condition<br> -->
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Get Weather Data</button>
+                    <div class="form-group">
+                        <label for="fromDate">From:</label>
+                        <input type="date" id="fromDate" class="form-control" min="2022-01-01" max="2024-10-30" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toDate">To:</label>
+                        <input type="date" id="toDate" class="form-control" min="2022-01-01" max="2024-10-30" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Get Historical Weather Data</button>
                 </form>
             </div>
         </div>
         <div id="result" class="mt-4"></div>
         <div id="graph-container">
             <div id="weather_chart" style="width: 100%; height: 500px;"></div>
+        </div>
+        <div id="chartLegend" style="margin-top: 20px; color: white; text-align: center;">
+            <!-- Dynamic legend -->
         </div>
     </div>
 

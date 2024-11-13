@@ -1,47 +1,45 @@
-from flask import Flask, jsonify, request, render_template
-import pandas as pd
+from flask import Flask, jsonify, request
 from flask_cors import CORS
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
 
-# Load the dataset
+# Load dataset
 data_frame = pd.read_csv('../dataset/cleaned_data/2022_2024_combined_weather_data.csv')
-
-# Ensure 'Date' is in datetime format
 data_frame['Date'] = pd.to_datetime(data_frame['Date'])
-
-@app.route('/')
-def home():
-    return render_template("index.html")
 
 @app.route('/weather', methods=['GET'])
 def weather():
     county_name = request.args.get('countyName')
-    info_type = request.args.get('typeOfInformation')
-    print(f"County Name: {county_name}, Info Type: {info_type}")
+    info_types = request.args.get('typeOfInformation').split(',')
+    from_date = request.args.get('fromDate')
+    to_date = request.args.get('toDate')
 
-    # Validate the parameters
-    if not county_name or not info_type:
+    if not county_name or not info_types or not from_date or not to_date:
         return jsonify({"error": "Missing required parameters"}), 400
 
-    # Check if the info_type is a valid column in the DataFrame
-    if info_type not in data_frame.columns:
-        return jsonify({"error": f"Invalid information type '{info_type}' provided."}), 400
-
-    # Filter the data for the specific county
-    filtered_data = data_frame[data_frame['County'] == county_name]
-
+    filtered_data = data_frame[(data_frame['County'] == county_name) & 
+                               (data_frame['Date'] >= from_date) & 
+                               (data_frame['Date'] <= to_date)]
+    
     if filtered_data.empty:
-        print("No data found for the given county.")
-        return jsonify({"error": "No data found for the given county"}), 404
+        return jsonify({"error": "No data found for the given criteria"}), 404
 
-    # Prepare data for the chart
-    chart_data = filtered_data[['Date', info_type]].rename(columns={'Date': 'date', info_type: 'value'})
-    chart_data['date'] = chart_data['date'].dt.strftime('%Y-%m-%d')  # Format date as string for JSON serialization
-    chart_data = chart_data.to_dict(orient='records')
+    result_data = []
+    for info_type in info_types:
+        if info_type not in data_frame.columns:
+            continue
+        series_data = filtered_data[['Date', info_type]].rename(columns={info_type: 'value'}).dropna()
+        result_data.append({
+            "info_type": info_type,
+            "values": series_data.to_dict(orient='records')
+        })
 
-    return jsonify({"data": chart_data, "info_type": info_type, "county_name": county_name})
+    return jsonify({
+        "county_name": county_name,
+        "data": result_data
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
