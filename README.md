@@ -7,7 +7,7 @@ cd server
 python3 app.py
 ```
 
-# Command to front end
+# Command to run the front end
 ```bash
 cd frontend
 python -m http.server 5500
