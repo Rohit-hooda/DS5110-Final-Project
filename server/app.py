@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import pandas as pd
 
@@ -8,6 +8,11 @@ CORS(app)
 # Load dataset
 data_frame = pd.read_csv('../dataset/cleaned_data/2022_2024_combined_weather_data.csv')
 data_frame['Date'] = pd.to_datetime(data_frame['Date'])
+
+@app.route('/', methods=['GET'])
+def serve_map():
+    print("sending file")
+    return send_file('../visualizations/chloropeth_map.html')
 
 @app.route('/weather', methods=['GET'])
 def weather():
