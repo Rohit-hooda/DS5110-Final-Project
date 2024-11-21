@@ -1,150 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-bundle.min.js"></script>
     <style>
-        body {
-            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        h1 {
-            margin-top: 20px;
-        }
-        #graph-container {
-            margin-top: 30px;
-        }
+      body {
+        background: linear-gradient(to bottom, #ffffff, #a2c2e7, #004070);
+        color: #333;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      h1 {
+        margin-top: 20px;
+      }
+      #graph-container {
+        margin-top: 30px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container py-5">
-        <!-- Title -->
-        <div class="text-center mb-5">
-            <h1>Weather Application</h1>
-            <p class="lead">Explore weather trends, historical data, and insights.</p>
-        </div>
+      <!-- Title -->
+      <div class="text-center mb-5">
+        <h1>MassWeather Dashboard</h1>
+        <p class="lead">
+          View real-time weather data, track trends, and analyze historical
+          patterns all in one intuitive dashboard.
+        </p>
+        <p>Created by: Rohit Hooda, Rimsha Kayastha, Tri Watanasuparp</p>
+      </div>
 
-        <!-- Chloropeth Map -->
-        <div class="row justify-content-center">
-            <div class="col-md-12 text-center mb-5">
-                <h2>Chloropeth Map</h2>
-                <iframe src="http://127.0.0.1:5000" class="w-100" height="400" frameborder="0"></iframe>
-            </div>
-        </div>
+      <!-- Current Weather By MA Counties Chloropeth Map -->
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center mb-5">
+          <h4>Current Weather Across Massachusetts Counties</h4>
+          <p>
+            Hover over the boundaries to view the county name, and click on the
+            shapes for detailed weather attributes such as temperature,
+            humidity, and precipitation.
+          </p>
 
-        <!-- Heat Maps -->
-        <div class="row justify-content-center">
-            <div class="col-md-12 text-center mb-5">
-                <h2>Heat Maps</h2>
-                <div class="d-flex justify-content-center flex-wrap">
-                    <img src="/static/images/precipitation_probability_max_heatmap.png" alt="Precipitation Heatmap" class="img-fluid m-3" style="max-width: 45%;">
-                    <img src="/static/images/temperature_2m_max_heatmap.png" alt="Temperature Heatmap" class="img-fluid m-3" style="max-width: 45%;">
+          <iframe
+            src="http://127.0.0.1:5000"
+            class="w-100"
+            height="400"
+            frameborder="0"
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- Heat Maps -->
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center mb-5">
+          <h4>Heat Maps</h4>
+          <div class="d-flex justify-content-center flex-wrap">
+            <img
+              src="/static/images/precipitation_probability_max_heatmap.png"
+              alt="Precipitation Heatmap"
+              class="img-fluid m-3"
+              style="max-width: 45%"
+            />
+            <img
+              src="/static/images/temperature_2m_max_heatmap.png"
+              alt="Temperature Heatmap"
+              class="img-fluid m-3"
+              style="max-width: 45%"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Heatmaps for Current Weather Features 7-Day Forecast -->
+      <!-- Heatmap Feature Selection -->
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card bg-light p-4 shadow">
+            <div class="card-body">
+              <h3 class="text-center mb-4">Weather Heatmap</h3>
+              <form id="heatmapForm" onsubmit="fetchHeatmap(); return false;">
+                <!-- Feature Selection Dropdown -->
+                <div class="form-group">
+                  <label for="featureSelect">Select a Weather Feature:</label>
+                  <select id="featureSelect" class="form-control" required>
+                    <option value="" disabled selected>Select Feature</option>
+                    <option value="temperature_2m">Temperature (°F)</option>
+                    <option value="relative_humidity_2m">
+                      Relative Humidity (%)
+                    </option>
+                    <option value="apparent_temperature">
+                      Apparent Temperature (°F)
+                    </option>
+                    <option value="precipitation">Precipitation (mm)</option>
+                    <option value="wind_speed_10m">Wind Speed (mph)</option>
+                    <option value="wind_direction_10m">
+                      Wind Direction (°)
+                    </option>
+                    <option value="wind_gusts_10m">Wind Gusts (mph)</option>
+                  </select>
                 </div>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-block">
+                  Generate Heatmap
+                </button>
+              </form>
             </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Weather Form -->
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card bg-dark p-4 shadow">
-                    <div class="card-body">
-                        <h2 class="text-center mb-4">Get Weather Data</h2>
-                        <form id="weatherForm" onsubmit="fetchWeatherData(); return false;">
-                            <!-- County Selection -->
-                            <div class="form-group">
-                                <label for="countyName">Select County:</label>
-                                <select id="countyName" class="form-control" required>
-                                    <option value="" disabled selected>Select County</option>
-                                    <option value="Barnstable">Barnstable</option>
-                                    <option value="Berkshire">Berkshire</option>
-                                    <option value="Bristol">Bristol</option>
-                                    <option value="Dukes">Dukes</option>
-                                    <option value="Essex">Essex</option>
-                                    <option value="Franklin">Franklin</option>
-                                    <option value="Hampden">Hampden</option>
-                                    <option value="Hampshire">Hampshire</option>
-                                    <option value="Middlesex">Middlesex</option>
-                                    <option value="Nantucket">Nantucket</option>
-                                    <option value="Norfolk">Norfolk</option>
-                                    <option value="Plymouth">Plymouth</option>
-                                    <option value="Suffolk">Suffolk</option>
-                                    <option value="Worcester">Worcester</option>
-                                </select>
-                            </div>
+      <!-- Heatmap Display -->
+      <div id="heatmapContainer" class="text-center mt-4">
+        <img
+          id="heatmapImage"
+          src=""
+          alt="Generated Heatmap will appear here."
+          class="img-fluid"
+          style="display: none; max-width: 100%"
+        />
+      </div>
 
-                            <!-- Type of Information -->
-                            <div class="form-group">
-                                <label>Select Type of Information:</label>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Max Temperature">
-                                    <label class="form-check-label">Maximum Temperature</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Min Temperature">
-                                    <label class="form-check-label">Minimum Temperature</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Max UV Index">
-                                    <label class="form-check-label">UV Index</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Max Wind Speed">
-                                    <label class="form-check-label">Wind Speed</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Max Wind Gusts">
-                                    <label class="form-check-label">Gust Speed</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Air Quality Index">
-                                    <label class="form-check-label">Air Quality Index</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Daylight Duration">
-                                    <label class="form-check-label">Daylight Duration</label>
-                                </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" name="typeOfInformation" value="Sunshine Duration">
-                                    <label class="form-check-label">Sunshine Duration</label>
-                                </div>
-                            </div>
-
-                            <!-- Date Selection -->
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="fromDate">From:</label>
-                                    <input type="date" id="fromDate" class="form-control" min="2022-01-01" max="2024-10-30" required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="toDate">To:</label>
-                                    <input type="date" id="toDate" class="form-control" min="2022-01-01" max="2024-10-30" required>
-                                </div>
-                            </div>
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary btn-block">Get Historical Weather Data</button>
-                        </form>
-                    </div>
+      <!-- Weather Form -->
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card bg-light p-4 shadow">
+            <div class="card-body">
+              <h3 class="text-center mb-4">Historical Weather Data</h3>
+              <form
+                id="weatherForm"
+                onsubmit="fetchWeatherData(); return false;"
+              >
+                <!-- County Selection -->
+                <div class="form-group">
+                  <label for="countyName">Massachusetts County:</label>
+                  <select id="countyName" class="form-control" required>
+                    <option value="" disabled selected>Select County</option>
+                    <option value="Barnstable">Barnstable</option>
+                    <option value="Berkshire">Berkshire</option>
+                    <option value="Bristol">Bristol</option>
+                    <option value="Dukes">Dukes</option>
+                    <option value="Essex">Essex</option>
+                    <option value="Franklin">Franklin</option>
+                    <option value="Hampden">Hampden</option>
+                    <option value="Hampshire">Hampshire</option>
+                    <option value="Middlesex">Middlesex</option>
+                    <option value="Nantucket">Nantucket</option>
+                    <option value="Norfolk">Norfolk</option>
+                    <option value="Plymouth">Plymouth</option>
+                    <option value="Suffolk">Suffolk</option>
+                    <option value="Worcester">Worcester</option>
+                  </select>
                 </div>
-            </div>
-        </div>
 
-        <!-- Chart -->
-        <div id="result" class="mt-4"></div>
-        <div id="graph-container" class="text-center">
-            <div id="weather_chart" class="mt-4" style="width: 100%; height: 500px;"></div>
-            <div id="chartLegend" class="mt-3"></div>
+                <!-- Type of Information -->
+                <div class="form-group">
+                  <label>Type of Information:</label>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Max Temperature"
+                    />
+                    <label class="form-check-label">Maximum Temperature</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Min Temperature"
+                    />
+                    <label class="form-check-label">Minimum Temperature</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Max UV Index"
+                    />
+                    <label class="form-check-label">UV Index</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Max Wind Speed"
+                    />
+                    <label class="form-check-label">Wind Speed</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Max Wind Gusts"
+                    />
+                    <label class="form-check-label">Wind Gusts</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Air Quality Index"
+                    />
+                    <label class="form-check-label">Air Quality Index</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Daylight Duration"
+                    />
+                    <label class="form-check-label">Daylight Duration</label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      name="typeOfInformation"
+                      value="Sunshine Duration"
+                    />
+                    <label class="form-check-label">Sunshine Duration</label>
+                  </div>
+                </div>
+
+                <!-- Date Selection -->
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="fromDate">From:</label>
+                    <input
+                      type="date"
+                      id="fromDate"
+                      class="form-control"
+                      min="2022-01-01"
+                      max="2024-10-30"
+                      required
+                    />
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="toDate">To:</label>
+                    <input
+                      type="date"
+                      id="toDate"
+                      class="form-control"
+                      min="2022-01-01"
+                      max="2024-10-30"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-block">
+                  Get Historical Weather Data
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Time Series Line Plot -->
+      <div id="result" class="mt-4"></div>
+      <div id="graph-container" class="text-center">
+        <div
+          id="weather_chart"
+          class="mt-4"
+          style="width: 100%; height: 500px"
+        ></div>
+        <div id="chartLegend" class="mt-3"></div>
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="index.js"></script>
-</body>
+  </body>
 </html>
