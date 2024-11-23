@@ -1,6 +1,5 @@
-// Function to fetch weather data and generate line chart
+// Fetch weather data and generate line chart
 function fetchWeatherData() {
-  // Reset the chart and legend before making a new request
   document.getElementById("weather_chart").innerHTML = "";
   document.getElementById("chartLegend").innerHTML = "";
 
@@ -11,7 +10,7 @@ function fetchWeatherData() {
   const fromDate = document.getElementById("fromDate").value;
   const toDate = document.getElementById("toDate").value;
 
-  // Validate dates
+  // Validating fromDate is before toDate
   if (new Date(fromDate) > new Date(toDate)) {
     alert("The 'From' date cannot be later than the 'To' date.");
     return;
@@ -57,7 +56,7 @@ function fetchWeatherData() {
           `Weather Data for ${countyName} from ${fromDate} to ${toDate}`
         );
 
-        // Set up legend styles
+        // Setting up legend styles
         const legendContainer = document.getElementById("chartLegend");
         legendContainer.innerHTML = "";
         legendContainer.style.display = "flex";
@@ -87,7 +86,7 @@ function fetchWeatherData() {
           const legendColor = legendColors[index % legendColors.length];
           lineSeries.stroke(legendColor);
 
-          // Create legend item
+          // Creating legend item
           const legendItem = document.createElement("div");
           legendItem.style.color = legendColor;
           legendItem.style.marginRight = "15px";
@@ -102,8 +101,6 @@ function fetchWeatherData() {
         chart.xAxis().title("Date");
         chart.xAxis().labels().rotation(-45);
         chart.yAxis().title("Values");
-
-        // Draw chart in container
         chart.container("weather_chart");
         chart.draw();
       });
@@ -114,10 +111,7 @@ function fetchWeatherData() {
     });
 }
 
-
 //  Function to fetch current weather data for chloropeth map
-
-
 
 // // Function to fetch the heatmap image for a specific feature
 // function fetchHeatmap(feature) {

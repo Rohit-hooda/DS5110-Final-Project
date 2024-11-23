@@ -16,19 +16,14 @@ import folium
 
 app = Flask(__name__)
 CORS(app)
-
-# Load historical weather dataset
 data_frame = pd.read_csv('../dataset/cleaned_data/2022_2024_combined_weather_data.csv')
 data_frame['Date'] = pd.to_datetime(data_frame['Date'])
 
-# Load current & forecasted weather dataset
-
-# Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 
-# List of coordinates (latitude and longitude) for each MA county
+# List of coordinates for each MA county
 ma_counties_coordinates = [
     {"county_name": "Barnstable", "latitude": 41.7003, "longitude": -70.3002},
     {"county_name": "Berkshire", "latitude": 42.3118, "longitude": -73.1822},
@@ -46,10 +41,8 @@ ma_counties_coordinates = [
     {"county_name": "Worcester", "latitude": 42.4002, "longitude": -71.9065}
 ]
 
-# Dictionary to store weather data by county
 county_weather_data = {}
 
-# Function to fetch and process weather data for a given set of coordinates
 def fetch_weather_data(county_name, latitude, longitude):
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -65,10 +58,8 @@ def fetch_weather_data(county_name, latitude, longitude):
     }
     responses = openmeteo.weather_api(url, params=params)
 
-    # Process the response for the given coordinates
     response = responses[0]
 
-    # Process current data
     current = response.Current()
     current_temperature_2m = current.Variables(0).Value()
     current_relative_humidity_2m = current.Variables(1).Value()
@@ -79,7 +70,6 @@ def fetch_weather_data(county_name, latitude, longitude):
     current_wind_direction_10m = current.Variables(6).Value()
     current_wind_gusts_10m = current.Variables(7).Value()
 
-    # Prepare current weather data for DataFrame
     current_data = {
         "time": [pd.to_datetime(current.Time(), unit="s", utc=True)],
         "temperature_2m": [current_temperature_2m],
@@ -92,7 +82,6 @@ def fetch_weather_data(county_name, latitude, longitude):
         "wind_gusts_10m": [current_wind_gusts_10m],
     }
 
-    # Create a DataFrame from the current weather data
     current_df = pd.DataFrame(data=current_data)
 
     # Process daily data
@@ -119,24 +108,19 @@ def fetch_weather_data(county_name, latitude, longitude):
     }
     daily_df = pd.DataFrame(daily_data)
 
-    # Store DataFrames in the dictionary by county
     county_weather_data[county_name] = {
         "current": current_df,
         "daily": daily_df
     }
     print(f"Processed weather data for {county_name}")
 
-# Loop through each set of coordinates and fetch weather data
 for county in ma_counties_coordinates:
     fetch_weather_data(county["county_name"], county["latitude"], county["longitude"])
 
-# Read the CSV file into a Pandas DataFrame
 ma_counties_boundaries = pd.read_csv('../dataset/cleaned_data/ma_counties_boundaries.csv')
 
-# Convert the 'geometry' column from WKT format to Shapely geometry objects
 ma_counties_boundaries['geometry'] = ma_counties_boundaries['geometry'].apply(wkt.loads)
 
-# Convert the DataFrame to a GeoDataFrame
 ma_counties_gdf = gpd.GeoDataFrame(ma_counties_boundaries, geometry='geometry')
 
 
@@ -145,11 +129,9 @@ def index():
     # Create a base Folium map centered around Massachusetts
     m = folium.Map(location=[42.4072, -71.3824], zoom_start=7, tiles="cartodbpositron")
 
-    # Create a function to generate random colors for each county
     def random_color():
         return f'#{random.randint(0, 255):02x}{random.randint(0, 255):02x}{random.randint(0, 255):02x}'
 
-    # Add counties as a GeoJSON layer with unique colors and tooltips
     for _, row in ma_counties_gdf.iterrows():
         county_name = row['NAME']
         weather_info = county_weather_data[county_name]["current"]
@@ -175,7 +157,6 @@ def index():
             popup=folium.Popup(popup_text, max_width=300)
         ).add_to(m)
 
-    # Save the map to html
     map_html = m.get_root().render()
 
     # Render the HTML template with the map
