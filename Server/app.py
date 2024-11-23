@@ -207,7 +207,7 @@ def weather():
             "info_type": info_type,
             "values": series_data.to_dict(orient='records')
         })
-
+        
     return jsonify({
         "county_name": county_name,
         "data": result_data
