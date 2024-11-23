@@ -3,13 +3,13 @@ The main objective of this project is to build a robust data integration pipelin
 
 # Commands to run the server
 ```bash
-cd server
+cd Server
 python3 app.py
 ```
 
 # Command to run the front end
 ```bash
-cd frontend
+cd Frontend
 python -m http.server 5500
 ```
 
