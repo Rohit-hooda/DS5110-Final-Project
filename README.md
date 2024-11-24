@@ -13,11 +13,13 @@ cd Frontend
 python -m http.server 5500
 ```
 
-Features we are plotting on the dashboard
+Weather Features Included in Our Dashboard
 1. Temperature(min/max)
-2. Wind Speed
-3. Gust Speed
-4. Weather Code
-5. DayLight Duration
-6. Sunlight duration
-7. Air Quality Index
+2. Humidity
+3. Precipitation
+4. Wind Speed/Direction
+6. Gust Speed
+7. UV Index
+8. Air Quality Index
+9. DayLight Duration
+10. Sunlight duration
