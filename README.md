@@ -1,17 +1,17 @@
 # DS5110-Final-Project
-The main objective of this project is to build a robust data integration pipeline that merges data from multiple sources into a consistent and unified format. This process will ensure that the gathered data is structured and ready for analysis. Once the data is properly integrated, the next step will be to develop a weather prediction model using relevant algorithms and techniques. The final component of the project involves visualizing the prediction results through interactive charts, which will be displayed on a user-friendly website, allowing users to easily interpret and understand the weather forecasts.
+The main objective of this project is to build a robust data integration pipeline that merges weather data from multiple sources into a consistent and unified format. This process will ensure that the gathered data is structured and ready for analysis. Once the data is properly integrated, the next step will be to visualize current and forecasted weather features for Massachusetts counties. This will be achieved through interactive maps and charts, which will be displayed on a user-friendly website, allowing users to easily interpret and understand the weather forecasts.
 
 # Project Structure 
 
-- The **`Frontend`** folder contains the `index.html` and `index.js` files responsible for building the dashboard and rendering charts. Additionally, it includes a `static` folder that houses all the heatmap images.
+- The **`Frontend`** folder contains the `index.html` and `index.js` files for building the dashboard and rendering charts. Additionally, it includes a `static` folder that houses all the heatmap images.
 
-- The **`Backend`** folder includes the `app.py` file, a Flask API that manages multiple routes. It handles calls to third-party APIs and generates the Massachusetts county map, which is utilized by the frontend for visualizations.
+- The **`Backend`** folder includes the `app.py` file, a Flask API that manages multiple routes. It handles calls to third-party APIs and generates the Massachusetts county map, which the frontend utilizes for visualizations.
 
-- The **`Pre-Processing`** folder contains scripts for data gathering, cleaning, and preparation to make it suitable for visualizations.
+- The **`Pre-Processing`** folder contains data gathering, cleaning, and preparation scripts to make it suitable for visualizations.
 
 - The **`Dataset`** folder includes both the raw unprocessed data and the cleaned dataset, which was processed using scripts from the Pre-Processing folder. 
 
-- The **`API-Request`** folder contains a script for making OpenMateo API requests. When executed, this script stores the raw, unprocessed data in the **`Dataset folder`**, which is later processed by the scripts in the **`Pre-Processing`** folder.
+- The **`API-Request`** folder contains a script for making OpenMateo API requests. When executed, this script stores the raw, unprocessed data in the **`Dataset`** folder, which is later processed by the scripts in the **`Pre-Processing`** folder.
  
 
 # Weather Features Included in Our Dashboard
