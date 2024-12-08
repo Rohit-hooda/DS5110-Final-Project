@@ -12,6 +12,7 @@ from shapely import wkt
 import geopandas as gpd
 import random
 import folium
+import os
 
 
 app = Flask(__name__)
@@ -123,6 +124,60 @@ ma_counties_boundaries['geometry'] = ma_counties_boundaries['geometry'].apply(wk
 
 ma_counties_gdf = gpd.GeoDataFrame(ma_counties_boundaries, geometry='geometry')
 
+def plot_heatmap(feature):
+    feature_data = pd.DataFrame()
+    for county, weather_data in county_weather_data.items():
+        daily_data = weather_data["daily"]
+        feature_data[county] = daily_data[feature]
+
+    feature_data.index = daily_data["date"].dt.date
+
+    if feature in ["temperature_2m_max", "temperature_2m_min"]:
+        cmap = "coolwarm"
+    else:
+        cmap = "Purples"
+
+    plt.figure(figsize=(12, 8))
+    heatmap = sns.heatmap(feature_data.transpose(), cmap=cmap, annot=True, fmt=".1f", cbar=True)
+
+    color_bar = heatmap.collections[0].colorbar
+    if feature == "temperature_2m_max" or feature == "temperature_2m_min":
+        color_bar.set_label('Temperature (°F)', rotation=270, labelpad=20)
+    elif feature == "precipitation_probability_max":
+        color_bar.set_label('Precipitation Probability (%)', rotation=270, labelpad=20)
+    elif feature == "wind_speed_10m_max" or feature == "wind_gusts_10m_max":
+        color_bar.set_label('Wind Speed (mph)', rotation=270, labelpad=20)
+    else:
+        color_bar.set_label(feature, rotation=270, labelpad=20)
+
+    if feature == "uv_index_max":
+        plt.title(f"7-Day UV Index Forecast by County", fontsize=16)
+    else:
+        plt.title(f"7-Day {feature.replace('_', ' ').title()} Forecast by County", fontsize=16)
+
+    plt.xlabel("Date", fontsize=12)
+    plt.ylabel("County", fontsize=12)
+    plt.xticks(rotation=45)
+
+    # Create the path to the static/images folder
+    images_folder_path = os.path.join(os.path.dirname(__file__), '..', 'Frontend', 'static', 'images')
+
+    # Make sure the directory exists
+    os.makedirs(images_folder_path, exist_ok=True)
+
+    # Save the figure to the static/images folder
+    plt.savefig(os.path.join(images_folder_path, f'{feature}_heatmap.png'), bbox_inches='tight')
+
+    # Close the plot to free up memory
+    plt.close()
+
+# Automatically generate and save the heatmaps for all the features
+plot_heatmap("temperature_2m_max")
+plot_heatmap("temperature_2m_min")
+plot_heatmap("precipitation_probability_max")
+plot_heatmap("wind_speed_10m_max")
+plot_heatmap("wind_gusts_10m_max")
+plot_heatmap("uv_index_max")
 
 @app.route('/')
 def index():
