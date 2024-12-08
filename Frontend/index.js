@@ -110,32 +110,3 @@ function fetchWeatherData() {
       document.getElementById("result").innerText = "Error fetching data";
     });
 }
-
-//  Function to fetch current weather data for chloropeth map
-
-// // Function to fetch the heatmap image for a specific feature
-// function fetchHeatmap(feature) {
-//   // Reset the image before making a new request
-//   const heatmapImage = document.getElementById("heatmapImage");
-//   heatmapImage.style.display = "none";
-//   const heatmapContainer = document.getElementById("heatmapContainer");
-//   heatmapContainer.innerHTML = ""; //
-
-//   const countyName = document.getElementById("countyName").value;
-
-//   const url = `http://127.0.0.1:5000/heatmap?feature=${encodeURIComponent(
-//     feature
-//   )}&countyName=${encodeURIComponent(countyName)}`;
-
-//   axios
-//     .get(url, { responseType: "blob" }) // Specify that we expect a binary response (image)
-//     .then((response) => {
-//       const imageUrl = URL.createObjectURL(response.data); // Create a local URL for the image blob
-//       heatmapImage.src = imageUrl; // Set the image source to the new URL
-//       heatmapImage.style.display = "block"; // Show the image
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching heatmap data:", error);
-//       alert("Error loading heatmap image.");
-//     });
-// }

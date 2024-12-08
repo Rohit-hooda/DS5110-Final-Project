@@ -3,3 +3,12 @@ folium
 requests
 pandas
 glob2
+flask 
+flask_cors
+seaborn
+matplotlib
+openmeteo_requests
+requests_cache
+retry_requests
+shapely
+random

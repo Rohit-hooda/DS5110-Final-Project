@@ -6,14 +6,10 @@ import requests
 import json
 import os
 
-## NOTE: Not being used currently
-#Mateo
-# Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after=36000)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
 
-# List of coordinates (latitude and longitude) for each county
 coordinates_list = [
     {"latitude": 41.7003, "longitude": -70.3002, "county": "Barnstable"},
     {"latitude": 42.3118, "longitude": -73.1822, "county": "Berkshire"},
@@ -31,10 +27,8 @@ coordinates_list = [
     {"latitude": 42.4002, "longitude": -71.9065, "county": "Worcester"}
 ]
 
-# List to store each DataFrame for each location
 all_dataframes = []
 
-# Function to fetch and process weather data for a given set of coordinates
 def fetch_weather_data(latitude, longitude, county_name):
     url = "https://historical-forecast-api.open-meteo.com/v1/forecast"
     params = {
@@ -50,10 +44,8 @@ def fetch_weather_data(latitude, longitude, county_name):
     }
     responses = openmeteo.weather_api(url, params=params)
 
-    # Process the response for the given coordinates
     response = responses[0]
 
-    # Process daily data
     daily = response.Daily()
     daily_data = {
         "date": pd.date_range(
@@ -84,26 +76,17 @@ def fetch_weather_data(latitude, longitude, county_name):
         "wind_gusts_10m_max": daily.Variables(16).ValuesAsNumpy()
     }
 
-    # Convert to DataFrame and add to list
     daily_dataframe = pd.DataFrame(data=daily_data)
     all_dataframes.append(daily_dataframe)
 
-# Loop through each set of coordinates and fetch weather data
 for coords in coordinates_list:
     fetch_weather_data(coords["latitude"], coords["longitude"], coords["county"])
 
-# Combine all dataframes into a single dataframe
 final_dataframe = pd.concat(all_dataframes, ignore_index=True)
 
-# Export to CSV
 final_dataframe.to_csv("../Dataset/raw_data/massachusetts_counties_weather_data.csv", index=False)
 print("Data has been saved to massachusetts_counties_weather_data.csv")
 
-
-
-# AQI
-
-# Define a list of latitude and longitude for Massachusetts counties
 counties = {
     "Barnstable": (41.7504, -70.2020),
     "Berkshire": (42.4477, -73.2526),
@@ -121,27 +104,20 @@ counties = {
     "Worcester": (42.2626, -71.8023)
 }
 
-# API Key
-api_key = 'KEY'  # Replace with your actual OpenWeatherMap API key
-
-# Define start and end timestamps
+api_key = 'KEY'  
 start_timestamp = 1640995200  # January 1, 2022
 end_timestamp = 1729939200    # October 30, 2024
 
-# Create a directory to save JSON files
 output_dir = 'ma_air_pollution_history'
 os.makedirs(output_dir, exist_ok=True)
 
 # Make requests for each county and save the response
 for county, (lat, lon) in counties.items():
-    # Construct the API request URL
     url = f'https://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start_timestamp}&end={end_timestamp}&appid={api_key}'
 
-    # Make the API request
     response = requests.get(url)
 
     if response.status_code == 200:
-        # Save the response JSON to a file
         json_file_path = os.path.join(output_dir, f'{county}_air_pollution_history.json')
         with open(json_file_path, 'w') as json_file:
             json.dump(response.json(), json_file, indent=4)
@@ -154,31 +130,22 @@ import pandas as pd
 import json
 import os
 
-# Directory containing the JSON files
 json_directory = 'ma_air_pollution_history'
 
-# Loop through all JSON files in the directory
 for json_file in os.listdir(json_directory):
     if json_file.endswith('.json'):
         json_file_path = os.path.join(json_directory, json_file)
 
-        # Load the JSON file
         with open(json_file_path, 'r') as file:
             data = json.load(file)
 
-        # Extract the list of air quality entries from the JSON data
         entries = data.get("list", [])
-
-        # Create a DataFrame with the desired columns
         df = pd.DataFrame(columns=["dt", "aqi", "co", "no", "no2", "o3", "so2", "pm2_5", "pm10", "nh3"])
-
-        # Populate the DataFrame
-        rows = []  # List to collect row dictionaries
+        rows = []
 
         for entry in entries:
-            # Extract each required field
             row = {
-                "dt": pd.to_datetime(entry["dt"], unit='s', utc=True),  # Convert to UTC datetime
+                "dt": pd.to_datetime(entry["dt"], unit='s', utc=True), 
                 "aqi": entry["main"]["aqi"],
                 "co": entry["components"].get("co", ""),
                 "no": entry["components"].get("no", ""),
@@ -189,16 +156,13 @@ for json_file in os.listdir(json_directory):
                 "pm10": entry["components"].get("pm10", ""),
                 "nh3": entry["components"].get("nh3", "")
             }
-            rows.append(row)  # Collect each row dictionary
+            rows.append(row)
 
-        # Create DataFrame from the collected rows
         df = pd.DataFrame(rows)
 
-        # Generate CSV file name by replacing .json with .csv
         csv_file_name = json_file.replace('.json', '.csv')
         csv_file_path = os.path.join(json_directory, csv_file_name)
 
-        # Save the DataFrame to a CSV file
         df.to_csv(csv_file_path, index=False)
 
         print(f"CSV file '{csv_file_name}' has been created successfully.")

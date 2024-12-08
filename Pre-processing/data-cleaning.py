@@ -24,13 +24,11 @@ def preprocessing(startdate, enddate):
     raw_df = Mateo_df.copy()
     for county in massachusettsCounties:
         AQI_df = pd.read_csv(f'../Dataset/raw_data/AQI/{county}_air_pollution_history.csv')
-        # check if columns already exist
         if 'aqi' in raw_df.columns:
             raw_df.update(AQI_df.set_index('dt'))
         else:
             raw_df = pd.merge(raw_df, AQI_df, left_on='date', right_on='dt', how='left')
         
-    # filter by date
     if startdate:
         raw_df = raw_df[raw_df['date']>startdate]
     if enddate:
@@ -49,11 +47,8 @@ def preprocessing(startdate, enddate):
     raw_df_summary = raw_df_filtered.describe()
     raw_df_summary
     
-    # check for null values
     raw_df_filtered.isnull().sum()
     
-    # Outliers
-
     min_values = {
         'sunshine_duration': 0.0, 'uv_index_max': 0.1, 'precipitation_probability_max': 0.0, 'aqi': 1.0
         }

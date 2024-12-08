@@ -194,40 +194,5 @@ def weather():
         "data": result_data
     })
 
-# @app.route('/heatmap', methods=['GET'])
-# def plot_heatmap():
-#     # Get the feature for the heatmap from the query parameters (e.g., temperature, humidity)
-#     feature = request.args.get('feature', default='temperature_2m', type=str)
-
-#     if feature not in data_frame.columns:
-#         return jsonify({"error": f"Feature '{feature}' not found in data."}), 400
-
-#     # Filter data for heatmap 
-#     heatmap_data = data_frame.pivot_table(
-#         index='County',  
-#         columns='Date',  
-#         values=feature, 
-#         aggfunc='mean',  
-#     )
-
-#     # Plot the heatmap using seaborn
-#     plt.figure(figsize=(12, 8))
-#     sns.set_theme()
-#     ax = sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt=".1f", linewidths=0.5)
-
-#     # Set title and labels
-#     ax.set_title(f'{feature} Heatmap', fontsize=16)
-#     ax.set_xlabel('Date')
-#     ax.set_ylabel('County')
-
-#     # Save the heatmap as a PNG image in memory
-#     img_io = io.BytesIO()
-#     plt.savefig(img_io, format='png')
-#     img_io.seek(0)
-
-#     # Return the image file as a response
-#     return send_file(img_io, mimetype='image/png')
-    
-
 if __name__ == '__main__':
     app.run(debug=True)
