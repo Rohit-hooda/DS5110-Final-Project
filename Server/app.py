@@ -13,10 +13,11 @@ import geopandas as gpd
 import random
 import folium
 import os
-
+import warnings
 
 app = Flask(__name__)
 CORS(app)
+warnings.filterwarnings("ignore")
 data_frame = pd.read_csv('../dataset/cleaned_data/2022_2024_combined_weather_data.csv')
 data_frame['Date'] = pd.to_datetime(data_frame['Date'])
 
@@ -86,7 +87,6 @@ def fetch_weather_data(county_name, latitude, longitude):
 
     current_df = pd.DataFrame(data=current_data)
 
-    # Process daily data
     daily = response.Daily()
     daily_data = {
         "date": pd.date_range(
@@ -114,7 +114,7 @@ def fetch_weather_data(county_name, latitude, longitude):
         "current": current_df,
         "daily": daily_df
     }
-    print(f"Processed weather data for {county_name}")
+    # print(f"Processed weather data for {county_name}")
 
 for county in ma_counties_coordinates:
     fetch_weather_data(county["county_name"], county["latitude"], county["longitude"])
@@ -125,7 +125,6 @@ ma_counties_boundaries['geometry'] = ma_counties_boundaries['geometry'].apply(wk
 
 ma_counties_gdf = gpd.GeoDataFrame(ma_counties_boundaries, geometry='geometry')
 
-# Function to plot a heatmap for a given feature
 def plot_heatmap(feature):
     feature_data = pd.DataFrame()
     for county, weather_data in county_weather_data.items():
@@ -161,16 +160,11 @@ def plot_heatmap(feature):
     plt.ylabel("County", fontsize=12)
     plt.xticks(rotation=45)
 
-    # Create the path to the static/images folder
     images_folder_path = os.path.join(os.path.dirname(__file__), '..', 'Frontend', 'static', 'images')
 
-    # Make sure the directory exists
     os.makedirs(images_folder_path, exist_ok=True)
-
-    # Save the figure to the static/images folder
     plt.savefig(os.path.join(images_folder_path, f'{feature}_heatmap.png'), bbox_inches='tight')
 
-# Automatically generate and save the heatmaps for all the features
 plot_heatmap("temperature_2m_max")
 plot_heatmap("temperature_2m_min")
 plot_heatmap("precipitation_probability_max")
@@ -178,9 +172,7 @@ plot_heatmap("wind_speed_10m_max")
 plot_heatmap("wind_gusts_10m_max")
 plot_heatmap("uv_index_max")
 
-# Function to plot a boxplot for a given feature
 def plot_boxplot(feature):
-   # List of valid features to be plotted
     valid_features = [
         "temperature_2m_max",
         "temperature_2m_min",
@@ -192,56 +184,40 @@ def plot_boxplot(feature):
         "wind_gusts_10m_max"
     ]
     
-    # Check if the feature is valid
     if feature not in valid_features:
         raise ValueError(f"Invalid feature: {feature}. Please choose from {', '.join(valid_features)}.")
     
-    # Collect data for the given feature
     feature_data = []
     county_names = []
     
     for county, weather_data in county_weather_data.items():
-        # Extract daily data for the given feature
         daily_data = weather_data["daily"]
         
         if feature in daily_data:
-            feature_data.append(daily_data[feature])  # Add the feature data
-            county_names.append(county)  # Add the county name
+            feature_data.append(daily_data[feature]) 
+            county_names.append(county)
     
-    # Create a DataFrame for plotting
     df = pd.DataFrame(feature_data).transpose()
     df.columns = county_names
 
-    # Create the boxplot
     plt.figure(figsize=(12, 8))
     boxplot = sns.boxplot(data=df, palette="Set2")
 
-    # Set labels and title
     boxplot.set_title(f"Distribution of {feature.replace('_', ' ').title()} by County", fontsize=16)
     boxplot.set_xlabel("County", fontsize=12)
     boxplot.set_xticklabels(county_names, rotation=45, ha="right")
     if feature == "temperature_2m_max" or feature == "temperature_2m_min":
-        # Add Fahrenheit degree symbol for temperature features
         plt.ylabel("Temperature (°F)", fontsize=12)
     elif feature == "wind_speed_10m_max" or feature == "wind_gusts_10m_max":
-        # Add mph for wind speed features
         plt.ylabel("Speed (mph)", fontsize=12)
     else:
         plt.ylabel(feature.replace("_", " ").capitalize(), fontsize=12)
     
-    # Rotate x-axis labels for better readability
     plt.xticks(rotation=45)
-    
-    # Create the path to the static/images folder
     images_folder_path = os.path.join(os.path.dirname(__file__), '..', 'Frontend', 'static', 'images')
-    
-    # Make sure the directory exists
     os.makedirs(images_folder_path, exist_ok=True)
-    
-    # Save the figure to the static/images folder
     plt.savefig(os.path.join(images_folder_path, f'{feature}_boxplot.png'), bbox_inches='tight')
     
-# Automatically generate and save the boxplots for all the features
 plot_boxplot("temperature_2m_max")
 plot_boxplot("temperature_2m_min")
 plot_boxplot("precipitation_probability_max")
@@ -284,7 +260,6 @@ def index():
 
     map_html = m.get_root().render()
 
-    # Render the HTML template with the map
     return render_template_string('''{{ map_html|safe }}''', map_html=map_html)
 
 @app.route('/weather', methods=['GET'])
