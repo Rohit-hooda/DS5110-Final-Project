@@ -1,5 +1,5 @@
 # DS5110-Final-Project
-The main objective of this project is to build a robust data integration pipeline that merges weather data from multiple sources into a consistent and unified format. This process will ensure that the gathered data is structured and ready for analysis. Once the data is properly integrated, the next step will be to visualize current and forecasted weather features for Massachusetts counties. This will be achieved through interactive maps and charts, which will be displayed on a user-friendly website, allowing users to easily interpret and understand the weather forecasts.
+The main objective of this project is to build a robust data integration pipeline that merges weather data from multiple sources into a consistent and unified format. This process will ensure that the gathered data is structured and ready for analysis. Once the data is properly integrated, the next step will be to visualize current and forecasted weather features for Massachusetts counties. This will be achieved through interactive maps and charts, which will be displayed on a user-friendly website, allowing users to interpret and understand the weather forecasts easily.
 
 # Project Structure 
 
@@ -28,16 +28,31 @@ The main objective of this project is to build a robust data integration pipelin
 
  # Steps to run the WebApp
 
- 1. Open a new terminal 
- 2. Type the following commands to run the server:
+ 1. **Clone the Repository**
+    Clone this repository to your local environment using the following command:
+    ```bash
+    git clone <https://github.com/Rohit-hooda/DS5110-Final-Project.git>
+    ```
+
+ 2. **Install Dependencies**
+    Open a terminal, navigate to the project directory, and run the following command to install all required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+ 3. **Start the Server**
+    Navigate to the server directory and start the server by running the following commands:
     ```bash
     cd Server
     python3 app.py
     ```
- 3. Open another terminal and type the following commands to execute the front end:
+ 4. **Run the Frontend**
+    Open a new terminal, navigate to the frontend directory, and start a local HTTP server with the following commands:
     ```bash
     cd Frontend
     python -m http.server 5500
     ```
-4. After you run the commands open a new browser tab and enter `http://127.0.0.1:5500/`
-5. Finally, you should be able to see something like: ![alt text](image.png)
+ 5. **Access the WebApp**
+   Open a browser and visit the following URL to access the WebApp: http://127.0.0.1:5500/
+   
+ 6. Finally, you should be able to see something like: ![alt text](image.png)
