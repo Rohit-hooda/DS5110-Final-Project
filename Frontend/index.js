@@ -57,9 +57,9 @@ function fetchWeatherData() {
           const month = (formattedDate.getMonth() + 1)
             .toString()
             .padStart(2, "0"); // MM
-          const day = formattedDate.getDate().toString().padStart(2, "0"); 
-          const year = formattedDate.getFullYear(); 
-          return `${month}/${day}/${year}`; 
+          const day = formattedDate.getDate().toString().padStart(2, "0");
+          const year = formattedDate.getFullYear();
+          return `${month}/${day}/${year}`;
         }
 
         chart.title(
