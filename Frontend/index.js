@@ -37,16 +37,14 @@ function fetchWeatherData() {
       const chartData = data.data.map((info) => ({
         info_type: info.info_type,
         values: info.values.map((item) => {
-          const formattedDate = new Date(item.Date).toLocaleDateString(
-            "en-GB",
-            {
-              weekday: "short",
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            }
-          );
-          return [formattedDate, item.value];
+          const formattedDate = new Date(item.Date);
+          const month = (formattedDate.getMonth() + 1)
+            .toString()
+            .padStart(2, "0");
+          const day = formattedDate.getDate().toString().padStart(2, "0");
+          const year = formattedDate.getFullYear();
+          const formattedDateStr = `${month}/${day}/${year}`;
+          return [formattedDateStr, item.value];
         }),
       }));
 
@@ -99,7 +97,7 @@ function fetchWeatherData() {
 
         // Customize axes
         chart.xAxis().title("Date");
-        chart.xAxis().labels().rotation(-45);
+        chart.xAxis().labels().rotation(-40);
         chart.yAxis().title("Values");
         chart.container("weather_chart");
         chart.draw();
