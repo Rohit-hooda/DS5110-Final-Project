@@ -15,9 +15,9 @@ The main objective of this project is to build a robust data integration pipelin
  
 
 # Weather Features Included in Our Dashboard
-1. Temperature(min/max)
+1. Temperature (min/max)
 2. Humidity
-3. Precipitation
+3. Precipitation Probability
 4. Wind Speed/Direction
 6. Gust Speed
 7. UV Index
@@ -60,4 +60,4 @@ The main objective of this project is to build a robust data integration pipelin
 
     Open a browser and visit the following URL to access the WebApp: http://127.0.0.1:5500/
    
- 6. Finally, you should be able to see something like this:![alt text](image.png)
+ 6. Finally, you should be able to see something like this:![alt text](MassWeatherHub.png)
