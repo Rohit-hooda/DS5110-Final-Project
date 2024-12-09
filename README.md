@@ -5,7 +5,7 @@ The main objective of this project is to build a robust data integration pipelin
 
 - The **`Frontend`** folder contains the `index.html` and `index.js` files for building the dashboard and rendering charts. Additionally, it includes a `static` folder that houses all the heatmap images.
 
-- The **`Backend`** folder includes the `app.py` file, a Flask API that manages multiple routes. It handles calls to third-party APIs and generates the Massachusetts county map, which the frontend utilizes for visualizations.
+- The **`Server`** folder includes the `app.py` file, a Flask API that manages multiple routes. It handles calls to third-party APIs and generates the Massachusetts county map, which the frontend utilizes for visualizations.
 
 - The **`Pre-Processing`** folder contains data gathering, cleaning, and preparation scripts to make it suitable for visualizations.
 
