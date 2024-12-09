@@ -6,13 +6,11 @@ import seaborn as sns
 import pandas as pd
 import openmeteo_requests
 import requests_cache
-import pandas as pd
 from retry_requests import retry
 from shapely import wkt
 import geopandas as gpd
 import random
 import folium
-import os
 
 
 app = Flask(__name__)
@@ -124,6 +122,46 @@ ma_counties_boundaries = pd.read_csv('../dataset/cleaned_data/ma_counties_bounda
 ma_counties_boundaries['geometry'] = ma_counties_boundaries['geometry'].apply(wkt.loads)
 
 ma_counties_gdf = gpd.GeoDataFrame(ma_counties_boundaries, geometry='geometry')
+
+
+# Function to plot pie chart showing the distribution of different weather conditions
+def plot_pie_chart(county_weather_data):
+    # Mapping of WMO weather codes to broader categories
+    condition_mapping = {
+        "Clear": [0, 1],
+        "Cloudy": [2, 3, 45, 48],
+        "Drizzle": [51, 53, 55],
+        "Freezing Drizzle": [56, 57],
+        "Rain": [61, 63, 65],
+        "Freezing Rain": [66, 67],
+        "Snow": [71, 73, 75, 77],
+        "Rain Showers": [80, 81, 82],
+        "Snow Showers": [85, 86],
+        "Thunderstorm": [95, 96, 99],
+    }
+    
+    # Initialize counts for each category
+    condition_counts = {condition: [] for condition in condition_mapping}
+
+    # Aggregate counts for each category
+    for county, weather_data in county_weather_data.items():
+        daily_data = weather_data["daily"]
+        for category, codes in condition_mapping.items():
+            count = daily_data[daily_data["weather_condition"].isin(codes)].shape[0]
+            condition_counts[category].append(count)
+
+    # Create pie charts for each category
+    plt.figure(figsize=(16, 12))
+    for i, (category, counts) in enumerate(condition_counts.items(), start=1):
+        plt.subplot(3, 4, i)  # Arrange pie charts in a grid
+        plt.pie(counts, labels=[county for county in county_weather_data.keys()],
+                autopct='%1.1f%%', startangle=90)
+        plt.title(f"{category} Distribution", fontsize=12)
+
+    plt.tight_layout()
+    plt.suptitle("Distribution of Weather Conditions by County", fontsize=16, y=1.02)
+    
+   
 
 # Function to plot a heatmap for a given feature
 def plot_heatmap(feature):
