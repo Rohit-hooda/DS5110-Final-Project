@@ -29,30 +29,35 @@ The main objective of this project is to build a robust data integration pipelin
  # Steps to run the WebApp
 
  1. **Clone the Repository**
+
     Clone this repository to your local environment using the following command:
     ```bash
     git clone <https://github.com/Rohit-hooda/DS5110-Final-Project.git>
     ```
 
  2. **Install Dependencies**
+
     Open a terminal, navigate to the project directory, and run the following command to install all required dependencies:
     ```bash
     pip install -r requirements.txt
     ```
 
  3. **Start the Server**
+
     Navigate to the server directory and start the server by running the following commands:
     ```bash
     cd Server
     python3 app.py
     ```
  4. **Run the Frontend**
+
     Open a new terminal, navigate to the frontend directory, and start a local HTTP server with the following commands:
     ```bash
     cd Frontend
     python -m http.server 5500
     ```
  5. **Access the WebApp**
-   Open a browser and visit the following URL to access the WebApp: http://127.0.0.1:5500/
+
+    Open a browser and visit the following URL to access the WebApp: http://127.0.0.1:5500/
    
- 6. Finally, you should be able to see something like: ![alt text](image.png)
+ 6. Finally, you should be able to see something like this:![alt text](image.png)
