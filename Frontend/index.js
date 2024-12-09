@@ -50,9 +50,26 @@ function fetchWeatherData() {
 
       anychart.onDocumentReady(function () {
         const chart = anychart.line();
+
+        // Helper function to format date as MM/DD/YYYY
+        function formatDate(date) {
+          const formattedDate = new Date(date);
+          const month = (formattedDate.getMonth() + 1)
+            .toString()
+            .padStart(2, "0"); // MM
+          const day = formattedDate.getDate().toString().padStart(2, "0"); 
+          const year = formattedDate.getFullYear(); 
+          return `${month}/${day}/${year}`; 
+        }
+
         chart.title(
-          `Weather Data for ${countyName} from ${fromDate} to ${toDate}`
+          `Weather Data for ${countyName} County from ${formatDate(
+            fromDate
+          )} to ${formatDate(toDate)}`
         );
+        chart.title().padding([10, 0, 10, 0]);
+        chart.title().fontSize(20);
+        chart.title().fontColor("black");
 
         // Setting up legend styles
         const legendContainer = document.getElementById("chartLegend");
@@ -60,20 +77,20 @@ function fetchWeatherData() {
         legendContainer.style.display = "flex";
         legendContainer.style.flexWrap = "wrap";
         legendContainer.style.justifyContent = "center";
-        legendContainer.style.backgroundColor = "#004070";
+        legendContainer.style.backgroundColor = "white";
         legendContainer.style.padding = "10px";
         legendContainer.style.borderRadius = "5px";
         legendContainer.style.marginTop = "10px";
 
         const legendColors = [
-          "#FF0000",
-          "#00FF00",
-          "#0000FF",
-          "#FFFF00",
-          "#FF00FF",
-          "#00FFFF",
-          "#FFA500",
-          "#800080",
+          "#E63946", // Bright Red
+          "#2A9D8F", // Teal
+          "#1E90FF", // Dodger Blue
+          "#F4A261", // Orange
+          "#9A031E", // Dark Maroon
+          "#6A0572", // Purple
+          "#DAA520", // Goldenrod
+          "#1D3557", // Navy Blue
         ];
 
         chartData.forEach((series, index) => {
@@ -98,7 +115,7 @@ function fetchWeatherData() {
         // Customize axes
         chart.xAxis().title("Date");
         chart.xAxis().labels().rotation(-40);
-        chart.yAxis().title("Values");
+        chart.yAxis().title("Value");
         chart.container("weather_chart");
         chart.draw();
       });
