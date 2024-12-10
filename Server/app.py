@@ -12,11 +12,15 @@ import geopandas as gpd
 import random
 import folium
 
+# Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app)
+
+# Load and preprocess weather data
 data_frame = pd.read_csv('../dataset/cleaned_data/2022_2024_combined_weather_data.csv')
 data_frame['Date'] = pd.to_datetime(data_frame['Date'])
 
+# Configure request caching and retry logic
 cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
@@ -41,8 +45,20 @@ ma_counties_coordinates = [
 
 county_weather_data = {}
 
+
 # Function to fetch weather data for a given county
 def fetch_weather_data(county_name, latitude, longitude):
+    """
+    Fetch weather data for a given county using Open-Meteo API.
+
+    Args:
+        county_name (str): Name of the county.
+        latitude (float): Latitude of the county.
+        longitude (float): Longitude of the county.
+
+    Returns:
+        None
+    """
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": latitude,
@@ -69,6 +85,7 @@ def fetch_weather_data(county_name, latitude, longitude):
     current_wind_direction_10m = current.Variables(6).Value()
     current_wind_gusts_10m = current.Variables(7).Value()
 
+    # Create DataFrame for current weather data
     current_data = {
         "time": [pd.to_datetime(current.Time(), unit="s", utc=True)],
         "temperature_2m": [current_temperature_2m],
@@ -112,6 +129,7 @@ def fetch_weather_data(county_name, latitude, longitude):
     }
     # print(f"Processed weather data for {county_name}")
 
+# Fetch weather data for all counties
 for county in ma_counties_coordinates:
     fetch_weather_data(county["county_name"], county["latitude"], county["longitude"])
 
@@ -124,6 +142,15 @@ ma_counties_gdf = gpd.GeoDataFrame(ma_counties_boundaries, geometry='geometry')
  
 # Function to plot a heatmap for a given feature
 def plot_heatmap(feature):
+    """
+    Plot a heatmap for a given weather feature (e.g., temperature, wind speed, etc.).
+
+    Args:
+        feature (str): The weather feature to plot (e.g., "temperature_2m_max").
+
+    Returns:
+        None
+    """
     feature_data = pd.DataFrame()
     for county, weather_data in county_weather_data.items():
         daily_data = weather_data["daily"]
@@ -170,7 +197,17 @@ plot_heatmap("wind_speed_10m_max")
 plot_heatmap("wind_gusts_10m_max")
 plot_heatmap("uv_index_max")
 
+# Function to plot a boxplot for a given feature
 def plot_boxplot(feature):
+    """
+    Plot a boxplot for a given weather feature by county.
+
+    Args:
+        feature (str): The weather feature to plot (e.g., "temperature_2m_max").
+
+    Returns:
+        None
+    """
     valid_features = [
         "temperature_2m_max",
         "temperature_2m_min",
@@ -223,8 +260,18 @@ plot_boxplot("wind_speed_10m_max")
 plot_boxplot("wind_gusts_10m_max")
 plot_boxplot("uv_index_max")
 
+# Flask index route to display the map
 @app.route('/')
 def index():
+    """
+    Render the main map with weather data for Massachusetts counties.
+
+    Args:
+        None
+
+    Returns:
+        str: Rendered HTML string with the map.
+    """
     # Create a base Folium map centered around Massachusetts
     m = folium.Map(location=[42.4072, -71.3824], zoom_start=7, tiles="cartodbpositron")
 
@@ -260,8 +307,22 @@ def index():
 
     return render_template_string('''{{ map_html|safe }}''', map_html=map_html)
 
+
+# Flask route for weather data
 @app.route('/weather', methods=['GET'])
 def weather():
+    """
+    Fetch weather data for a given county within a date range and for selected features.
+
+    Args:
+        county_name (str): Name of the county.
+        info_types (list): List of weather features to retrieve (e.g., temperature, wind speed).
+        from_date (str): Start date in the format YYYY-MM-DD.
+        to_date (str): End date in the format YYYY-MM-DD.
+
+    Returns:
+        jsonify: A JSON response containing the requested data or error message.
+    """
     county_name = request.args.get('countyName')
     info_types = request.args.get('typeOfInformation').split(',')
     from_date = request.args.get('fromDate')

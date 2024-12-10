@@ -6,6 +6,7 @@ import requests
 import json
 import os
 
+# Create a cached session to store requests and responses, to avoid making repeated requests
 cache_session = requests_cache.CachedSession('.cache', expire_after=36000)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
@@ -29,6 +30,7 @@ coordinates_list = [
 
 all_dataframes = []
 
+# Function to fetch weather data from the Open Meteo API for each county
 def fetch_weather_data(latitude, longitude, county_name):
     url = "https://historical-forecast-api.open-meteo.com/v1/forecast"
     params = {
@@ -46,6 +48,7 @@ def fetch_weather_data(latitude, longitude, county_name):
 
     response = responses[0]
 
+    # Extract daily weather data from the response
     daily = response.Daily()
     daily_data = {
         "date": pd.date_range(
@@ -79,6 +82,7 @@ def fetch_weather_data(latitude, longitude, county_name):
     daily_dataframe = pd.DataFrame(data=daily_data)
     all_dataframes.append(daily_dataframe)
 
+# Fetch weather data for each county by iterating through the coordinates list
 for coords in coordinates_list:
     fetch_weather_data(coords["latitude"], coords["longitude"], coords["county"])
 
@@ -126,12 +130,9 @@ for county, (lat, lon) in counties.items():
         print(f'Failed to retrieve data for {county}: {response.status_code} - {response.text}')
 
 
-import pandas as pd
-import json
-import os
-
 json_directory = 'ma_air_pollution_history'
 
+# Iterate through the JSON files in the directory and convert them into DataFrames
 for json_file in os.listdir(json_directory):
     if json_file.endswith('.json'):
         json_file_path = os.path.join(json_directory, json_file)
